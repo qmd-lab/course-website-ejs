@@ -8,7 +8,7 @@ listing:
     contents: _extensions/qmd-lab/course-website-ejs/schedule-badge/schedule-example.yml
   - id: schedule-wall-calendar
     template: _extensions/qmd-lab/course-website-ejs/schedule-wall-calendar/schedule.ejs
-    contents: schedule-example.yml
+    contents: _extensions/qmd-lab/course-website-ejs/schedule-wall-calendar/schedule-example.yml
 ---
 
 This extension contains several different EJS templates that are useful for course websites.
