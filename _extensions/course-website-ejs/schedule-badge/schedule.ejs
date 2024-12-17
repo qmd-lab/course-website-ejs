@@ -13,11 +13,12 @@
 .label-Exam { background-color: green}
 
 #th-schedule {
-    width: 10%;
+    width: 15%;
+    text-align: center;
 }
 
 #td-schedule:first-of-type {
-    width: 60%;
+    width: 55%;
 }
 
 #td-schedule:last-of-type {
@@ -42,6 +43,9 @@ a.unpublished {
 
 
 ```{=html}
+<% const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]; %>
+
+
 <% for (const item of items) { %>
 
    <h4>Week <%- item.week %></h4>
@@ -55,11 +59,12 @@ a.unpublished {
 
         <% for (let i = 0; i < day.docs.length; i++) { %>
 
-
-
            <tr>
+           <% let text = day['date'].split("-"); %>
+           <% let month = monthNames[Number(text[1])-1]; %>
+           <% let dayNum = Number(text[2]); %>
            <% if (i == 0) { %>
-           <th id="th-schedule"scope="row" rowspan="<%- day.docs.length %>"><%- day.date %>:</th>
+           <th id="th-schedule" scope="row" rowspan="<%- day.docs.length %>"><%- month %> <%- dayNum %>:</th>
            <% } %>
            <% if (!day.docs[i].draft){ %>
               <td id="td-schedule"><strong class="label label-<%- day.docs[i].type %>"><%- day.docs[i].type %> <%- day.docs[i].id %></strong> <a href="<%- day.docs[i].href %>" target="_blank"><%- day.docs[i].name %></a></td>
