@@ -62,22 +62,38 @@
 
 ```{=html}
 <% // This JS sifts through schedule.yml to find material from this week
-const currentDate = new Date(); // get current system date
+
+const currentDate = new Date(); // get current system date in local time
+const currentUTC = Date.UTC(currentDate.getUTCFullYear(), currentDate.getUTCMonth(), currentDate.getUTCDate()); // convert to UTC
+
 let thisWeek = null;
+
 for (const week of items) {
   if (week.days[0].date) {
-    const mondayDate = new Date(week.days[0].date); // Get Monday's date
-    // check if Monday is exactly 3 days ahead or less from now.
-    // this will keep publishing the current week through Thurs
-    // then switch to next week Fri morn.
-    const differenceInTime = mondayDate.getTime() - currentDate.getTime();
-    const differenceInDays = differenceInTime / (1000 * 3600 * 24); // convert time difference to days
-    if (differenceInDays <= 3 && differenceInDays >= -4) { // adjust this to tweak publish time
+    let mondayDate = new Date(week.days[0].date); // get Monday's date in local time
+
+    // adjust from GMT+8 to UTC by subtracting 8 hours
+    const adjustedMondayDate = new Date(mondayDate.getTime() - (8 * 60 * 60 * 1000));
+
+    // convert adjusted date to UTC
+    const mondayUTC = Date.UTC(
+      adjustedMondayDate.getUTCFullYear(), 
+      adjustedMondayDate.getUTCMonth(), 
+      adjustedMondayDate.getUTCDate()
+    );
+
+    const differenceInDays = (mondayUTC - currentUTC) / (1000 * 3600 * 24); // convert time difference to days
+    
+    if (differenceInDays <= 2 && differenceInDays >= -4) { // adjust this to tweak publish time
+      console.log(`Monday date is ${mondayUTC}`)
+      console.log(`The difference in days is ${differenceInDays}.`)
       thisWeek = week;
     }
   }
-} 
+}
+
 if (thisWeek !== null) {
+  console.log(`The system date is ${currentUTC} UTC`)
   console.log(`Using week ${thisWeek.week} as "This Week" at top of homepage.`)
 } else {
   console.log(`No viable weeks found in schedule to publish as "This Week" at top of homepage. Check that each week has non-empty "days" and that the first day has a "date". See this-week.ejs.`);
