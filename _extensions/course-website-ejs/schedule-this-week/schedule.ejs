@@ -96,11 +96,50 @@
 ```
 
 ```{=html}
-<div class="calendar">
-<% for (const week of items) { %>
-  <!-- Create each week -->
-  <h4>Week <%= week.week %></h4>
-  <div class="week-x-box">
+<% // This JS sifts through schedule.yml to find material from this week
+
+const currentDate = new Date(); // get current system date in local time
+const currentUTC = Date.UTC(currentDate.getUTCFullYear(), currentDate.getUTCMonth(), currentDate.getUTCDate()); // convert to UTC
+
+let thisWeek = null;
+
+for (const week of items) {
+  if (week.days[0].date) {
+    let mondayDate = new Date(week.days[0].date); // get Monday's date in local time
+
+    // adjust from GMT+8 to UTC by subtracting 8 hours
+    const adjustedMondayDate = new Date(mondayDate.getTime() - (8 * 60 * 60 * 1000));
+
+    // convert adjusted date to UTC
+    const mondayUTC = Date.UTC(
+      adjustedMondayDate.getUTCFullYear(), 
+      adjustedMondayDate.getUTCMonth(), 
+      adjustedMondayDate.getUTCDate()
+    );
+
+    const differenceInDays = (mondayUTC - currentUTC) / (1000 * 3600 * 24); // convert time difference to days
+    
+    if (differenceInDays <= 2 && differenceInDays >= -4) { // adjust this to tweak publish time
+      console.log(`Monday date is ${mondayUTC}`)
+      console.log(`The difference in days is ${differenceInDays}.`)
+      thisWeek = week;
+    }
+  }
+}
+
+if (thisWeek !== null) {
+  console.log(`The system date is ${currentUTC} UTC`)
+  console.log(`Using week ${thisWeek.week} as "This Week" at top of homepage.`)
+} else {
+  console.log(`No viable weeks found in schedule to publish as "This Week" at top of homepage. Check that each week has non-empty "days" and that the first day has a "date". See this-week.ejs.`);
+} 
+
+if (thisWeek !== null) { %>
+
+<!-- Create each week -->
+<div class="this-week">
+<h4>This Week</h4>
+<div class="week-x-box">
 
   <% for (const day of week.days) { %>
     <!-- Create each day -->
